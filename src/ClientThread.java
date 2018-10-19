@@ -20,9 +20,9 @@ public class ClientThread extends Thread {
 
 			Socket socket = new Socket(this.ip_address_server, this.port_server);
 
-			//while (socket.isClosed() == false) {
-			//	socket = new Socket(this.ip_address_server, this.port_server);
-			//}
+			while (socket.isClosed() == true) {
+				socket = new Socket(this.ip_address_server, this.port_server);
+			}
 			
 			String request = "HELLO " + ip_address + " " + socket 
 					+ " " + this.client_id;
