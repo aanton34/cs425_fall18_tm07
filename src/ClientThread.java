@@ -32,8 +32,10 @@ public class ClientThread extends Thread {
 				
 			// while <300 send request
 			int requests = 0;
+			long sum=0;
 			while (requests < 300) {
-				if((requests%25)==0) 
+				long startTime = System.currentTimeMillis();
+				if((requests%50)==0) 
 					System.out.println("Request "+requests+" from client "+this.client_id);
 				writer.println(request);
 				InputStream input = socket.getInputStream();
@@ -48,10 +50,15 @@ public class ClientThread extends Thread {
 						reply = reader.readLine();
 				}
 				requests++;
+				long endTime = System.currentTimeMillis();
+				long time = endTime - startTime;
+				sum+=time;
 			}
 			
 			System.out.println("Client " + this.client_id + " has finished after "
 					+ requests + " requests");
+			double averTime = sum / 300;
+			System.out.println("Average Communication Latency (" + this.client_id + "): " + averTime);
 			socket.close();
 			
 		} catch (UnknownHostException ex) {
