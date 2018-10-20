@@ -1,17 +1,24 @@
+package cs425_fall18_tm07;
+
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.io.*;
 
 public class ClientThread extends Thread {
 	private String ip_address_server;
 	private int port_server;
 	private int client_id;
+	private File latencyTimes;
 	
-	public ClientThread(String[] args, int id) {
+	public ClientThread(String[] args, int id, File latencyFile) {
 		this.ip_address_server = args[0]; // server ip address
 		this.port_server = Integer.parseInt(args[1]); // the port of the server
 		this.client_id = id;
+		this.latencyTimes = latencyFile;
 	}
-	
+
 	public void run() {
 		// find the client ip address
 		try {
@@ -35,8 +42,6 @@ public class ClientThread extends Thread {
 			long sum=0;
 			while (requests < 300) {
 				long startTime = System.currentTimeMillis();
-				if((requests%50)==0) 
-					System.out.println("Request "+requests+" from client "+this.client_id);
 				writer.println(request);
 				InputStream input = socket.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -57,14 +62,19 @@ public class ClientThread extends Thread {
 			
 			System.out.println("Client " + this.client_id + " has finished after "
 					+ requests + " requests");
+			
 			double averTime = sum / 300;
-			System.out.println("Average Communication Latency (" + this.client_id + "): " + averTime);
+			String text = "Average Communication Latency (" + this.client_id + "): " + averTime + "\n";
+			Files.write(Paths.get(this.latencyTimes.getName()), text.getBytes(), StandardOpenOption.APPEND);
+			
 			socket.close();
 			
 		} catch (UnknownHostException ex) {
 			System.out.println("Server not found: " + ex.getMessage());
+			ex.printStackTrace();
 		} catch (IOException ex) {
 			System.out.println("I/O error: " + ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 }
