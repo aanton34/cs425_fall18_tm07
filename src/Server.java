@@ -16,7 +16,7 @@ public class Server{
 			int i=0;
 			while(true) {
 				Socket clientSocket = serverSocket.accept();
-				System.out.println("Client " + (i+1) + " is connected");
+				System.out.println("Client " + i + " is connected");
 				new ServerThread(clientSocket).start();
 				i++;
 			}
