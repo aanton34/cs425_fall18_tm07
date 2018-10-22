@@ -1,6 +1,7 @@
 package cs425_fall18_tm07;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,18 +10,25 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 public class ServerThread extends Thread {
 	private Socket clientSocket;
 	private File serverThroughput;
 	private int servedRequests;
 	private int client_ID;
 	private int counter;
+	private static long previousMemoryUsed;
 
 	public ServerThread(Socket socket, File ThroughputFile) {
 		this.clientSocket = socket;
 		this.serverThroughput = ThroughputFile;
 		this.servedRequests = 0;
 		this.counter = 0;
+		this.previousMemoryUsed=0;
 	}
 
 	public int getRandomPayload() {
@@ -29,33 +37,52 @@ public class ServerThread extends Thread {
 		payloadSize = (rand.nextInt((2000 - 300) + 1) + 300) * 1024;
 		return payloadSize;
 	}
-
-	/*public char getRandomByte() {
-		Random r = new Random();
-		int randomChar = r.nextInt(('~' - ' ') + 1) + ' ';
-		char character = (char) randomChar;
-		return character;
-	}*/
-
-	public void printThroughput() throws IOException {
-		String text = this.counter + ") Throughput of client " + this.client_ID + ": " + this.servedRequests + "\n";
+	
+	public void printStatusInfo() throws Exception {
+		String text = this.counter + ") Throughput of client " + this.client_ID + ": " + this.servedRequests 
+				+ " - MemoryUsageUtilization: " + getMemoryUsageUtilization() + " - ProcessCpuLoad: " +
+				getProcessCpuLoad() + "\n";
 		Files.write(Paths.get(this.serverThroughput.getName()), text.getBytes(), StandardOpenOption.APPEND);
 		this.counter++;
+	}
+	
+	public static double getMemoryUsageUtilization() {
+		long afterUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		long actualMemUsed = afterUsedMem - previousMemoryUsed;
+		double percentage = (100.0 * actualMemUsed) / (Runtime.getRuntime().totalMemory() * 1.0);
+		return ((int) (percentage * 10) / 10.0);
+	}
+	
+	public static double getProcessCpuLoad() throws Exception {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
+		AttributeList list = mbs.getAttributes(name, new String[] { "ProcessCpuLoad" });
+		if (list.isEmpty())
+			return Double.NaN;
+		Attribute att = (Attribute) list.get(0);
+		Double value = (Double) att.getValue();
+		if (value == -1.0)
+			return Double.NaN;
+		return ((int) (value * 10000) / 100.0);
 	}
 
 	public void run() {
 		try {
+			previousMemoryUsed = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 			Timer timer = new Timer(true);
 			timer.scheduleAtFixedRate(new TimerTask() {
 				public void run() {
 					try {
-						printThroughput();
+						printStatusInfo();
 					} catch (IOException e) {
-						System.out.println("Server exception: " + e.getMessage());
+						System.out.println("IOException: " + e.getMessage());
+						e.printStackTrace();
+					} catch (Exception e) {
+						System.out.println("Exception: " + e.getMessage());
 						e.printStackTrace();
 					}
 				}
-			}, 0, 10000);
+			}, 1000, 1000);
 
 			InputStreamReader input = new InputStreamReader(clientSocket.getInputStream());
 			BufferedReader in = new BufferedReader(input);
