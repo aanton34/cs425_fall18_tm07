@@ -30,12 +30,12 @@ public class ServerThread extends Thread {
 		return payloadSize;
 	}
 
-	public char getRandomAsciiByte() {
+	/*public char getRandomByte() {
 		Random r = new Random();
 		int randomChar = r.nextInt(('~' - ' ') + 1) + ' ';
 		char character = (char) randomChar;
 		return character;
-	}
+	}*/
 
 	public void printThroughput() throws IOException {
 		String text = this.counter + ") Throughput of client " + this.client_ID + ": " + this.servedRequests + "\n";
@@ -60,8 +60,7 @@ public class ServerThread extends Thread {
 			InputStreamReader input = new InputStreamReader(clientSocket.getInputStream());
 			BufferedReader in = new BufferedReader(input);
 
-			OutputStream output = clientSocket.getOutputStream();
-			PrintWriter out = new PrintWriter(output, true);
+			DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 
 			String clientInput = in.readLine();
 			String clientInfo[] = clientInput.split(" ");
@@ -72,17 +71,16 @@ public class ServerThread extends Thread {
 				clientInfo = clientInput.split(" ");
 				clientID = clientInfo[clientInfo.length - 1];
 				this.client_ID = Integer.parseInt(clientID);
+				
+				String message = "WELCOME Client " + clientID + "\n";
+				out.writeUTF(message);		// write the message
+				
 				int randomPayload = getRandomPayload();
-				out.println("WELCOME Client " + clientID);
-				for (int i = 0; i < randomPayload; i++) {
-					if ((i % 100) == 0) {
-						out.println();
-					} else {
-						out.print(getRandomAsciiByte());
-					}
-				}
-				out.println();
-				out.println("END");
+				byte[] payload = new byte [randomPayload];
+				new Random().nextBytes(payload);
+				out.writeInt(payload.length); // write length of the message
+				out.write(payload);           // write the message
+				
 				this.servedRequests++;
 				clientInput = in.readLine();
 			}

@@ -24,7 +24,7 @@ public class Client {
 				latencyTimes.createNewFile();
 			}
 
-			for (int j = 0; j < repetitions; j++) {
+			for (int j = 0; j < 1; j++) {
 				ClientThread [] threads = new ClientThread [10];
 				for (int i = 0; i < 10; i++) {
 					threads[i] = new ClientThread(args, i, latencyTimes);

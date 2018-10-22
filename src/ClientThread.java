@@ -43,32 +43,27 @@ public class ClientThread extends Thread {
 			while (requests < 300) {
 				long startTime = System.currentTimeMillis();
 				writer.println(request);
-				InputStream input = socket.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-				String reply = reader.readLine();
-				while (reply != null) {
-					//System.out.println(reply);
-					if(reply.compareTo("END")==0) {
-						break;
-					}
-					else
-						reply = reader.readLine();
+				
+				DataInputStream reader = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+				reader.readUTF();
+				int length = reader.readInt();
+				if(length>0){
+					byte[] payload = new byte[length];
+				    reader.readFully(payload, 0, payload.length); // read the message
 				}
 				requests++;
 				long endTime = System.currentTimeMillis();
 				long time = endTime - startTime;
 				sum+=time;
 			}
-			
 			System.out.println("Client " + this.client_id + " has finished after "
 					+ requests + " requests");
-			
+	
 			double averTime = sum / 300;
 			String text = "Average Communication Latency (" + this.client_id + "): " + averTime + "\n";
 			Files.write(Paths.get(this.latencyTimes.getName()), text.getBytes(), StandardOpenOption.APPEND);
 			
-			socket.close();
-			
+			socket.close();	
 		} catch (UnknownHostException ex) {
 			System.out.println("Server not found: " + ex.getMessage());
 			ex.printStackTrace();
