@@ -2,7 +2,7 @@ Antonia Antoniou
 Pavlina Kyriakou
 
 CS 425 - Fall 2018
-Assignment 1- Team 07
+Assignment 1 - Team 07
 
 Client.java file
 In this file, we have the main class of the client part. 
@@ -47,6 +47,7 @@ process CPU load with some java’s libraries for each clients’ interval time.
 in the serverThroughput.txt. Finally it prints the message WELCOME along with the client id and after each client 
 finishes is prints a message of that. In the end it closes the client socket.
 
+Graph Documentation
 From the graphs we extracted the results that the latency of 2CPUs is slower than the latency of 1CPU and that the
 throughput of 2CPUs is less than the 1CPU, meaning that 2CPUs serve less requests in each interval than 1CPU. These
 results are the opposite of what we expected and this is probably due to the fact that we extracted the results of
