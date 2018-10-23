@@ -1,0 +1,48 @@
+Antonia Antoniou
+Pavlina Kyriakou
+
+CS 425 - Fall 2018
+Assignment 1- Team 07
+
+Client.java file
+In this file, we have the main class of the client part. 
+In the main class, we read the arguments given by the user which are the IP address of the server, the port of the 
+server and the number of repetitions we want to have. Then the program is run as many times as the repetition number 
+and each time we create a certain number of threads which is the number of clients and each thread starts running. 
+When threads start, we send the arguments read from the command line, the number of client and the latency times 
+to ClientThread. Then if the file called clientLatencies.txt doesn’t exist we create it, and if it already 
+exists we delete it and create it again. This file will contain the latency times of each client.
+
+ClientThread.java
+This thread is called from Client.java, gets the IP address of the server 
+and the port of the server given from the arguments, the client id and the latency times file. 
+Then we calculate the socket of the client with the server IP address and the number of the server’s port. 
+If the socket we got from the calculation is used by another client, we find another free one. 
+After we calculate all the necessary elements we need for our client, we send the request HELLO 
+along with the IP address, the socket number and the client number to the server side. 
+Then for each one of the 300 requests sent to the server, we print the request, and we start a timer 
+that we need for the calculation of the latency. Because the size of payload is very big, 
+we’ve decided to use DataInputStream instead of a buffer so the execution of our program is faster. 
+At this point we read the message WELCOME that is sent by the server. The payload is sent by the server 
+and it is an array of bytes. After the reading of the message, the number of requests is increased. 
+Then we set an end timer to mark the finishing time of the end of the request and then we calculate 
+the sum of the start time and end time of each request and then we find the average time which is 
+the Average Communication Latency and write this into the latency times file. And finally we close the socket.
+
+Server.java
+In this file, we have the main class of the server part. In the main class, we read the argument given 
+by the user which is the number of port of the server. Then we run the once. If the file 
+called serverThroughput.txt doesn’t exist we create it, and if it already exists we delete it 
+and create it again. This file will contain several lines of the throughput, the memory utilization and CPU load. 
+Each line is relevant to each client’s time interval. While the server is enabled, the server socket will accept 
+the clients in that specific socket, print that each client is connected to the server and start a new server thread.
+
+ServerThread.java
+This thread is called from Server.java, gets the client socket number and the file serverThroughput.txt. 
+This part gets a random payload number between 300 – 2000 * 1024Bytes. It calculates the usage of memory with 
+finding the current memory usage and the previous memory usage. Both memory usages are calculated 
+with total – free memory usages. And we find memory usage by extracting previous used memory from the current used memory 
+and then we find the percentage of this result doing (100*memory usage)/ (total memory). We also calculate the 
+process CPU load with some java’s libraries for each clients’ interval time. It writes all these information 
+in the serverThroughput.txt. Finally it prints the message WELCOME along with the client id and after each client 
+finishes is prints a message of that. In the end it closes the client socket.
