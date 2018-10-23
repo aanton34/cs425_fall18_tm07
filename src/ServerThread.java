@@ -82,7 +82,7 @@ public class ServerThread extends Thread {
 						e.printStackTrace();
 					}
 				}
-			}, 1000, 1000);
+			}, 1000, 20000);
 
 			InputStreamReader input = new InputStreamReader(clientSocket.getInputStream());
 			BufferedReader in = new BufferedReader(input);
