@@ -46,3 +46,8 @@ and then we find the percentage of this result doing (100*memory usage)/ (total 
 process CPU load with some java’s libraries for each clients’ interval time. It writes all these information 
 in the serverThroughput.txt. Finally it prints the message WELCOME along with the client id and after each client 
 finishes is prints a message of that. In the end it closes the client socket.
+
+From the graphs we extracted the results that the latency of 2CPUs is slower than the latency of 1CPU and that the
+throughput of 2CPUs is less than the 1CPU, meaning that 2CPUs serve less requests in each interval than 1CPU. These
+results are the opposite of what we expected and this is probably due to the fact that we extracted the results of
+1CPU in the night when the load was way less than in the morning when we extracted the results for 2CPUs.
