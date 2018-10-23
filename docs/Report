@@ -52,3 +52,5 @@ From the graphs we extracted the results that the latency of 2CPUs is slower tha
 throughput of 2CPUs is less than the 1CPU, meaning that 2CPUs serve less requests in each interval than 1CPU. These
 results are the opposite of what we expected and this is probably due to the fact that we extracted the results of
 1CPU in the night when the load was way less than in the morning when we extracted the results for 2CPUs.
+Whenever we increase the number of clients the latency increases as well because we increase the load of the program.
+The process CPU load is so small because we only run the program with 2 clients.
