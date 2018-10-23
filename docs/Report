@@ -53,4 +53,9 @@ throughput of 2CPUs is less than the 1CPU, meaning that 2CPUs serve less request
 results are the opposite of what we expected and this is probably due to the fact that we extracted the results of
 1CPU in the night when the load was way less than in the morning when we extracted the results for 2CPUs.
 Whenever we increase the number of clients the latency increases as well because we increase the load of the program.
-The process CPU load is so small because we only run the program with 2 clients.
+Whenever we increase the number of clients the throughput decreases because the more users connect to the server 
+there is more work load.
+The process CPU load graph is so small because we only run the program with 2 clients. As the throughput increases the CPU 
+load increases too because there is more work load so CPU works more.
+The Memory utilization graph is so small because we only run the program with 2 clients. As the throughput 
+increases the memory usage increases too because we use more memory.
